@@ -256,7 +256,7 @@ export class Header extends Component {
     const logo = (
       <div>
         <span><img src={cdsHooksLogo} alt="" height="30" width="30" /></span>
-        <b className={styles['logo-title']}>CDS Hooks Sandbox</b>
+        <b className={styles['logo-title']}>X-EHR</b>
       </div>
     );
 
@@ -293,7 +293,6 @@ export class Header extends Component {
         <div className={styles['nav-container']}>
           <button className={this.getNavClasses('patient-view')} onClick={() => this.switchHook('patient-view')}>Patient View</button>
           <button className={this.getNavClasses('rx-view')} onClick={() => this.switchHook('order-select', 'rx-view')}>Rx View</button>
-          <button className={this.getNavClasses('pama')} onClick={() => this.switchHook('order-select', 'pama')}>PAMA Imaging</button>
         </div>
       </div>
     );

@@ -12,6 +12,7 @@ import Text from 'terra-text';
 import Input from 'terra-form-input';
 import DatePicker from 'terra-date-picker';
 import List from 'terra-list';
+import Button from 'terra-button';
 
 import debounce from 'debounce';
 
@@ -36,7 +37,7 @@ cdsExecution.registerTriggerHandler('rx-view/order-select', {
     const { fhirVersion } = state.fhirServerState;
     const resource = createFhirResource(fhirVersion, state.patientState.currentPatient.id, state.medicationState, state.patientState.currentPatient.conditionsResources);
     const selection = `${resource.resourceType}/${resource.id}`;
-
+    console.log(state.medicationState);
     return {
       selections: [selection],
       draftOrders: {
@@ -154,6 +155,7 @@ export class RxView extends Component {
     this.selectStartDate = this.selectStartDate.bind(this);
     this.selectEndDate = this.selectEndDate.bind(this);
     this.toggleEnabledDate = this.toggleEnabledDate.bind(this);
+    this.setSubmitPrescriptionState = this.setSubmitPrescriptionState.bind(this);
   }
 
   /**
@@ -219,6 +221,18 @@ export class RxView extends Component {
     });
     this.props.updateDate('start', newStartRange);
   }
+
+  setSubmitPrescriptionState() {
+            const newStartRange = {
+      enabled: true,
+      value:'2022-11-24',
+    };
+	      this.setState({
+      startRange: newStartRange,
+    });
+	  this.props.updateDate('start', newStartRange);
+
+  }	
 
   // Note: A second parameter (date value) is supplied automatically by the Terra onChange function for the DatePicker component
   selectEndDate(event, value) {
@@ -338,7 +352,11 @@ export class RxView extends Component {
             </Field>
           </div>
         </form>
-        <CardList takeSuggestion={this.props.takeSuggestion} />
+	<div className={styles['dose-instruction']}>    
+            <label className={styles['dosage-amount']}>Allergy Information</label>
+	    <CardList takeSuggestion={this.props.takeSuggestion} />
+	</div>
+	 <Button text="Prescribe" variant="emphasis" onClick={this.setSubmitPrescriptionState}/>   
       </div>
     );
   }

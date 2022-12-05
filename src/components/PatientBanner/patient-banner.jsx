@@ -10,15 +10,8 @@ export function PatientBanner(props) {
   const pid = props.patientId || defaultId;
   return (
     <div className={styles['patient-banner-text']}>
-      <p>
-        <strong>Patient: </strong>
-        {' '}
-        {name}
-        {' '}
-        <strong>ID: </strong>
-        {' '}
-        {pid}
-      </p>
+      <p><span>Patient:</span> {name}</p>
+      <p><span>ID:</span> {pid}</p>
     </div>
   );
 }

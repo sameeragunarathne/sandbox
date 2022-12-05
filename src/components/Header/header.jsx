@@ -1,35 +1,37 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react/forbid-prop-types */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import cx from 'classnames';
-import ApplicationHeaderLayout from 'terra-application-header-layout';
-import IconSettings from 'terra-icon/lib/icon/IconSettings';
-import IconChevronDown from 'terra-icon/lib/icon/IconChevronDown';
-import Menu from 'terra-menu';
-import Button from 'terra-button';
-import IconLeft from 'terra-icon/lib/icon/IconLeft';
-import IconEdit from 'terra-icon/lib/icon/IconEdit';
-import pickBy from 'lodash/pickBy';
-import forIn from 'lodash/forIn';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import cx from "classnames";
+import ApplicationHeaderLayout from "terra-application-header-layout";
+import IconSettings from "terra-icon/lib/icon/IconSettings";
+import IconChevronDown from "terra-icon/lib/icon/IconChevronDown";
+import IconUsers from "terra-icon/lib/icon/IconUsers";
+import Menu from "terra-menu";
+import Button from "terra-button";
+import IconLeft from "terra-icon/lib/icon/IconLeft";
+import IconEdit from "terra-icon/lib/icon/IconEdit";
+import pickBy from "lodash/pickBy";
+import forIn from "lodash/forIn";
+import ProfileView from "../ProfileView/profile-view";
 
-import ConfigureServices from '../ConfigureServices/configure-services';
-import ServicesEntry from '../ServicesEntry/services-entry';
-import PatientEntry from '../PatientEntry/patient-entry';
-import FhirServerEntry from '../FhirServerEntry/fhir-server-entry';
+import ConfigureServices from "../ConfigureServices/configure-services";
+import ServicesEntry from "../ServicesEntry/services-entry";
+import PatientEntry from "../PatientEntry/patient-entry";
+import FhirServerEntry from "../FhirServerEntry/fhir-server-entry";
 
-import retrievePatient from '../../retrieve-data-helpers/patient-retrieval';
-import retrieveDiscoveryServices from '../../retrieve-data-helpers/discovery-services-retrieval';
-import retrieveFhirMetadata from '../../retrieve-data-helpers/fhir-metadata-retrieval';
-import callServices from '../../retrieve-data-helpers/service-exchange';
-import { setHook } from '../../actions/hook-actions';
-import { toggleDemoView } from '../../actions/card-demo-actions';
-import { resetServices } from '../../actions/cds-services-actions';
-import cdsHooksLogo from '../../assets/cds-hooks-logo.png';
-import styles from './header.css';
+import retrievePatient from "../../retrieve-data-helpers/patient-retrieval";
+import retrieveDiscoveryServices from "../../retrieve-data-helpers/discovery-services-retrieval";
+import retrieveFhirMetadata from "../../retrieve-data-helpers/fhir-metadata-retrieval";
+import callServices from "../../retrieve-data-helpers/service-exchange";
+import { setHook } from "../../actions/hook-actions";
+import { toggleDemoView } from "../../actions/card-demo-actions";
+import { resetServices } from "../../actions/cds-services-actions";
+import cdsHooksLogo from "../../assets/cds-hooks-logo.png";
+import styles from "./header.css";
 
-import store from '../../store/store';
+import store from "../../store/store";
 
 const propTypes = {
   /**
@@ -96,15 +98,27 @@ export class Header extends Component {
        * Flag to determine if the Configure Services modal is open
        */
       isConfigureServicesOpen: false,
+      /**
+       * Flag to determine if the profile menu is open
+       */
+      profileOpen: false,
+      /**
+       * Flag to determine if the Profile Info Modal is open
+       */
+      isViewProfileOpen: false,
     };
 
     this.switchHook = this.switchHook.bind(this);
     this.getNavClasses = this.getNavClasses.bind(this);
     this.setSettingsNode = this.setSettingsNode.bind(this);
     this.getSettingsNode = this.getSettingsNode.bind(this);
+    this.setProfileNode = this.setProfileNode.bind(this);
+    this.getProfileNode = this.getProfileNode.bind(this);
 
     this.openSettingsMenu = this.openSettingsMenu.bind(this);
     this.closeSettingsMenu = this.closeSettingsMenu.bind(this);
+    this.openProfileMenu = this.openProfileMenu.bind(this);
+    this.closeProfileMenu = this.closeProfileMenu.bind(this);
     this.openAddServices = this.openAddServices.bind(this);
     this.closeAddServices = this.closeAddServices.bind(this);
     this.openChangePatient = this.openChangePatient.bind(this);
@@ -113,30 +127,60 @@ export class Header extends Component {
     this.closeChangeFhirServer = this.closeChangeFhirServer.bind(this);
     this.openConfigureServices = this.openConfigureServices.bind(this);
     this.closeConfigureServices = this.closeConfigureServices.bind(this);
+    this.closeProfileInfo = this.closeProfileInfo.bind(this);
+    this.openProfileInfo = this.openProfileInfo.bind(this)
 
     this.resetConfiguration = this.resetConfiguration.bind(this);
   }
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.patientId !== this.props.patientId) { return false; }
+    if (nextProps.patientId !== this.props.patientId) {
+      return false;
+    }
     return true;
   }
 
-  setSettingsNode(node) { this.settingsNode = node; }
+  setSettingsNode(node) {
+    this.settingsNode = node;
+  }
 
-  getSettingsNode() { return this.settingsNode; }
+  getSettingsNode() {
+    return this.settingsNode;
+  }
+
+  setProfileNode(node) {
+    this.profileNode = node;
+  }
+
+  getProfileNode() {
+    return this.profileNode;
+  }
 
   /**
    * Determine how to make a hook tab display as the current or "active" tab or another tab
    * @param {*} hook - the name of the hook
    */
   getNavClasses(screen) {
-    return this.props.screen === screen ? cx(styles['nav-links'], styles['active-link']) : styles['nav-links'];
+    return this.props.screen === screen
+      ? cx(styles["nav-links"], styles["active-link"])
+      : styles["nav-links"];
   }
 
-  closeSettingsMenu() { this.setState({ settingsOpen: false }); }
+  closeSettingsMenu() {
+    this.setState({ settingsOpen: false });
+  }
 
-  openSettingsMenu() { this.setState({ settingsOpen: true }); }
+  openSettingsMenu() {
+    this.setState({ settingsOpen: true });
+  }
+
+  closeProfileMenu() {
+    this.setState({ profileOpen: false });
+  }
+
+  openProfileMenu() {
+    this.setState({ profileOpen: true });
+  }
 
   /**
    * Once a new tab (hook) is chosen, the Sandbox must grab the applicable services for that hook and invoke them.
@@ -146,12 +190,15 @@ export class Header extends Component {
   switchHook(hook, screen = hook) {
     const state = store.getState();
     const filterService = (service) => service.hook === hook && service.enabled;
-    const services = pickBy(state.cdsServicesState.configuredServices, filterService);
+    const services = pickBy(
+      state.cdsServicesState.configuredServices,
+      filterService
+    );
 
     // If the current view tab is being clicked, re-invoke the configured services on this hook.
     // Otherwise, set the new hook/view.
     if (this.props.hook === hook && this.props.screen === screen) {
-      this.props.dispatch({ type: 'EXPLICIT_HOOK_TRIGGER' });
+      this.props.dispatch({ type: "EXPLICIT_HOOK_TRIGGER" });
 
       // TODO cut this logic out and use generic handers as for pama
       if (services && Object.keys(services).length) {
@@ -159,9 +206,10 @@ export class Header extends Component {
           // If the tab is clicked again, make sure the Sandbox is qualified to call out to EHR's based
           // on current context (i.e. for the Rx View, ensure a medication has been prescribed before
           // re-invoking the services on that hook if the Rx View tab is clicked multiple times)
-          if (hook === 'order-select') {
-            const medicationPrescribed = state.medicationState.decisions.prescribable
-              && state.medicationState.medListPhase === 'done';
+          if (hook === "order-select") {
+            const medicationPrescribed =
+              state.medicationState.decisions.prescribable &&
+              state.medicationState.medListPhase === "done";
             if (medicationPrescribed) {
               callServices(this.props.dispatch, state, key);
             }
@@ -183,26 +231,30 @@ export class Header extends Component {
   async resetConfiguration() {
     // Temporary removal until all persisted values are refactored into one localStorage property
     this.closeSettingsMenu();
-    localStorage.removeItem('PERSISTED_cdsServices');
+    localStorage.removeItem("PERSISTED_cdsServices");
     this.props.resetServices();
     retrieveDiscoveryServices();
 
-    localStorage.removeItem('PERSISTED_fhirServer');
+    localStorage.removeItem("PERSISTED_fhirServer");
     await retrieveFhirMetadata();
 
-    localStorage.removeItem('PERSISTED_hook');
-    localStorage.removeItem('PERSISTED_screen');
+    localStorage.removeItem("PERSISTED_hook");
+    localStorage.removeItem("PERSISTED_screen");
 
-    localStorage.removeItem('PERSISTED_patientId');
+    localStorage.removeItem("PERSISTED_patientId");
     await retrievePatient();
   }
 
   openConfigureServices() {
     this.setState({ isConfigureServicesOpen: true });
-    if (this.state.settingsOpen) { this.closeSettingsMenu(); }
+    if (this.state.settingsOpen) {
+      this.closeSettingsMenu();
+    }
   }
 
-  closeConfigureServices() { this.setState({ isConfigureServicesOpen: false }); }
+  closeConfigureServices() {
+    this.setState({ isConfigureServicesOpen: false });
+  }
 
   openAddServices() {
     this.setState({ isAddServicesOpen: true });
@@ -211,7 +263,9 @@ export class Header extends Component {
     }
   }
 
-  closeAddServices() { this.setState({ isAddServicesOpen: false }); }
+  closeAddServices() {
+    this.setState({ isAddServicesOpen: false });
+  }
 
   /**
    * Open the Change Patient modal to allow for changing the patient ID in context.
@@ -234,45 +288,95 @@ export class Header extends Component {
         await retrievePatient(this.props.patientId);
       } catch (err) {
         this.setState({ isChangePatientOpen: true });
-        if (this.state.settingsOpen) { this.closeSettingsMenu(); }
+        if (this.state.settingsOpen) {
+          this.closeSettingsMenu();
+        }
       }
     } else {
       this.setState({ isChangePatientOpen: true });
-      if (this.state.settingsOpen) { this.closeSettingsMenu(); }
+      if (this.state.settingsOpen) {
+        this.closeSettingsMenu();
+      }
     }
   }
 
-  closeChangePatient() { this.setState({ isChangePatientOpen: false }); }
+  closeChangePatient() {
+    this.setState({ isChangePatientOpen: false });
+  }
 
   openChangeFhirServer() {
     this.setState({ isChangeFhirServerOpen: true });
-    if (this.state.settingsOpen) { this.closeSettingsMenu(); }
+    if (this.state.settingsOpen) {
+      this.closeSettingsMenu();
+    }
   }
 
-  closeChangeFhirServer() { this.setState({ isChangeFhirServerOpen: false }); }
+  closeChangeFhirServer() {
+    this.setState({ isChangeFhirServerOpen: false });
+  }
+
+  openProfileInfo() {
+    this.setState({ isViewProfileOpen: true });
+    if (this.state.profileOpen) {
+      this.closeProfileMenu();
+    }
+  }
+
+  closeProfileInfo() {
+    this.setState({ isViewProfileOpen: false });
+  }
 
   render() {
     // Title and Logo
     const logo = (
       <div>
-        <span><img src={cdsHooksLogo} alt="" height="30" width="30" /></span>
-        <b className={styles['logo-title']}>CDS Hooks Sandbox</b>
+        <span>
+          <img src={cdsHooksLogo} alt="" height="30" width="30" />
+        </span>
+        <b className={styles["logo-title"]}>X-EHR</b>
       </div>
     );
 
     // Gear settings menu item options
     let menuItems = [
-      <Menu.Item className={styles['add-services']} text="Add CDS Services" key="add-services" onClick={this.openAddServices} />,
-      <Menu.Item className={styles['configure-services']} text="Configure CDS Services" key="configure-services" onClick={this.openConfigureServices} />,
-      <Menu.Divider className={styles['divider-1']} key="Divider1" />,
-      <Menu.Item className={styles['change-patient']} text="Change Patient" key="change-patient" onClick={this.openChangePatient} />,
+      <Menu.Item
+        className={styles["add-services"]}
+        text="Add CDS Services"
+        key="add-services"
+        onClick={this.openAddServices}
+      />,
+      <Menu.Item
+        className={styles["configure-services"]}
+        text="Configure CDS Services"
+        key="configure-services"
+        onClick={this.openConfigureServices}
+      />,
+      <Menu.Divider className={styles["divider-1"]} key="Divider1" />,
+      <Menu.Item
+        className={styles["change-patient"]}
+        text="Change Patient"
+        key="change-patient"
+        onClick={this.openChangePatient}
+      />,
     ];
     if (!this.props.isSecuredSandbox) {
-      menuItems.push(<Menu.Item className={styles['change-fhir-server']} text="Change FHIR Server" key="change-fhir-server" onClick={this.openChangeFhirServer} />);
+      menuItems.push(
+        <Menu.Item
+          className={styles["change-fhir-server"]}
+          text="Change FHIR Server"
+          key="change-fhir-server"
+          onClick={this.openChangeFhirServer}
+        />
+      );
     }
     menuItems = menuItems.concat([
-      <Menu.Divider className={styles['divider-2']} key="Divider2" />,
-      <Menu.Item className={styles['reset-configuration']} text="Reset Configuration" key="reset-configuration" onClick={this.resetConfiguration} />,
+      <Menu.Divider className={styles["divider-2"]} key="Divider2" />,
+      <Menu.Item
+        className={styles["reset-configuration"]}
+        text="Reset Configuration"
+        key="reset-configuration"
+        onClick={this.resetConfiguration}
+      />,
     ]);
 
     // Gear settings menu
@@ -287,13 +391,45 @@ export class Header extends Component {
       </Menu>
     );
 
+    let profileItems = [
+      <Menu.Item
+        className={styles["profile-view"]}
+        text="View Profile"
+        key="configure-services"
+        onClick={this.openProfileInfo}
+      />,
+      <Menu.Divider className={styles["divider"]} key="Divider" />,
+      <Menu.Item className={styles["logout"]} text="Log Out" key="logout" />,
+    ];
+
+    const profileMenu = (
+      <Menu
+        isOpen={this.state.profileOpen}
+        onRequestClose={this.closeProfileMenu}
+        targetRef={this.getProfileNode}
+        isArrowDisplayed
+      >
+        {profileItems}
+      </Menu>
+    );
+
     // Navigation tabs (the hook views)
     const navigation = (
-      <div className={styles['nav-tabs']}>
-        <div className={styles['nav-container']}>
-          <button className={this.getNavClasses('patient-view')} onClick={() => this.switchHook('patient-view')}>Patient View</button>
-          <button className={this.getNavClasses('rx-view')} onClick={() => this.switchHook('order-select', 'rx-view')}>Rx View</button>
-          <button className={this.getNavClasses('pama')} onClick={() => this.switchHook('order-select', 'pama')}>PAMA Imaging</button>
+      <div className={styles["nav-tabs"]}>
+        <div className={styles["nav-container"]}>
+          <button
+            className={this.getNavClasses("patient-view")}
+            onClick={() => this.switchHook("patient-view")}
+          >
+            Practitioner View
+          </button>
+          <button
+            className={this.getNavClasses("rx-view")}
+            onClick={() => this.switchHook("order-select", "rx-view")}
+          >
+            Rx View
+          </button>
+          {/* <button className={this.getNavClasses('pama')} onClick={() => this.switchHook('order-select', 'pama')}>PAMA Imaging</button> */}
         </div>
       </div>
     );
@@ -313,10 +449,23 @@ export class Header extends Component {
 
     // The actual gear icon for the settings menu
     const utilities = (
-      <div className={styles.icon} onClick={this.openSettingsMenu}>
-        <span className={styles['padding-right']}><IconSettings height="1.2em" width="1.2em" /></span>
-        <span className={styles['padding-right']} ref={this.setSettingsNode}><IconChevronDown height="1em" width="1em" /></span>
-      </div>
+      <>
+        <div className={styles.icon} onClick={this.openSettingsMenu}>
+          <span className={styles["padding-right"]}>
+            <IconSettings height="1.2em" width="1.2em" />
+          </span>
+          <span className={styles["padding-right"]} ref={this.setSettingsNode}>
+            <IconChevronDown height="1em" width="1em" />
+          </span>
+        </div>
+        <div className={styles.icon} onClick={this.openProfileMenu}>
+          <span className={styles["padding-right"]}>
+            <IconUsers height="1.2em" width="1.2em" />
+          </span>
+          <span className={styles["padding-right"]} ref={this.setProfileNode}>
+          </span>
+        </div>
+      </>
     );
 
     return (
@@ -326,9 +475,10 @@ export class Header extends Component {
           navigation={this.props.isCardDemoView ? null : navigation}
           extensions={extensions}
           utilities={utilities}
-          style={{ backgroundColor: '#384e77' }}
+          style={{ backgroundColor: "#384e77" }}
         />
         {gearMenu}
+        {profileMenu}
         {this.state.isAddServicesOpen ? (
           <ServicesEntry
             isOpen={this.state.isAddServicesOpen}
@@ -353,6 +503,12 @@ export class Header extends Component {
             closePrompt={this.closeChangeFhirServer}
             isEntryRequired={false}
             resolve={(e) => this.openChangePatient(e, true)}
+          />
+        ) : null}
+        {this.state.isViewProfileOpen ? (
+          <ProfileView
+            isOpen={this.state.isViewProfileOpen}
+            closePrompt={this.closeProfileInfo}
           />
         ) : null}
       </div>

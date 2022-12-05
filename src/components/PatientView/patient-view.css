@@ -8,6 +8,38 @@
   width: 100%;
 }
 
+.patient-info {
+  padding: 15px;
+  margin: 10px;
+  margin-top: 20px;
+  background: #fcfcfc;
+  border: 2px solid #ddd;
+  border-left-width: 6px;
+  border-left-color: #0079be;
+  text-transform: capitalize;
+}
+
+.patient-info h2 {
+  color: #0079be;
+  margin-top: 0.5em;
+  padding-bottom: 0.7em;
+  border-bottom: 2px solid #ddd;;
+}
+
+.patient-info h2 span{
+  color: #1a3464;
+}
+
+.patient-data-text {
+  font-size: 1em;
+  color: #1a3464;
+}
+
+.patient-data-text span {
+  font-weight: 600;
+  color:#1a3464;
+}
+
 .half-view {
   width: 50%;
 }
@@ -19,12 +51,6 @@
   letter-spacing: -0.025em;
   color: #384E77; /* $color-primary */
   border-bottom: 2px solid #eee;
-}
-
-.patient-data-text {
-  font-size: 1em;
-  margin: 0 0 20px;
-  color: #888;
 }
 
 @media (max-width: 975px) {

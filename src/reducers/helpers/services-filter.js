@@ -18,6 +18,9 @@ export function getServicesByHook(hook, services) {
  * @param {*} serviceUrls - Services to retrieve valid cards from
  */
 export function getCardsFromServices(state, serviceUrls) {
+  console.log("service urls:");
+  console.log(serviceUrls);
+  console.log(state);
   const totalCards = { cards: [] };
   const { exchanges, hiddenCards } = state.serviceExchangeState;
   serviceUrls.forEach((url) => {

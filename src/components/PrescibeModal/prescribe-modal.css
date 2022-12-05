@@ -1,0 +1,15 @@
+.modal-footer {
+    text-align: right;
+}
+
+.modal-text {
+    text-align: center;
+    font-size: 1.5em;
+    color: #384E77;
+}
+
+.modal-body {
+    background-color: white;
+    width: 800px;
+    height: 200px;
+}

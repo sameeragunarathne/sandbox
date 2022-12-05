@@ -2,7 +2,7 @@ import * as types from '../actions/action-types';
 
 const initialState = {
   defaultPatientId: 'smart-1288992',
-  defaultUser: 'Practitioner/COREPRACTITIONER1',
+  defaultUser: 'E443ac58-8ece-4385-8d55-775c1b8f3a37',
   currentUser: '',
   currentPatient: {
     id: 'smart-1288992',

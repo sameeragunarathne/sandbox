@@ -1,6 +1,11 @@
 .patient-banner-text {
-    font-size: 1em;
-    margin: 0 0 20px;
-    color: #888;
-  }
-  
+  font-size: 1.1em;
+  color: #1a3464;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 20px;
+  line-height: 0.6em;
+}
+
+.patient-banner-text span {
+  font-weight: 600;
+}

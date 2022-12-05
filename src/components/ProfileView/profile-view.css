@@ -1,0 +1,23 @@
+.modal-footer {
+    text-align: right;
+}
+.modal-header {
+    color: #384E77;
+}
+
+.modal-text {
+    color: #384E77;
+    font-weight: 400;
+}
+
+.modal-text span {
+    color: #384E77;
+    font-weight: 600;
+}
+
+.modal-container {
+    background-color: white;
+    width: 800px;
+    height: 260px;
+}
+

@@ -82,7 +82,8 @@
     "terra-spacer": "^2.1.0",
     "terra-text": "^2.1.0",
     "terra-toggle": "^2.1.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",

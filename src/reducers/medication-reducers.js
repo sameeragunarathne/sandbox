@@ -4,6 +4,7 @@ import compareVersions from 'compare-versions';
 import * as types from '../actions/action-types';
 import rxnorm from '../assets/medication-list';
 import { getConditionCodingFromCode } from './helpers/services-filter';
+import { v4 as uuid } from 'uuid';
 
 // Check if there is an associated name with the passed in drug ID to potentially create a prescribable object
 const getPrescribableFromID = (id) => {
@@ -26,9 +27,12 @@ const getQueryParam = (param) => {
 export const createFhirResource = (fhirVersion, patientId, state, patientConditions) => {
   const isSTU3OrHigher = compareVersions(fhirVersion, '3.0.1') >= 0;
 
+  const unique_id = uuid();
+  const medication_request_id = unique_id.slice(0,8);
+
   const resource = {
     resourceType: isSTU3OrHigher ? 'MedicationRequest' : 'MedicationOrder',
-    id: isSTU3OrHigher ? 'request-123' : 'order-123',
+    id: isSTU3OrHigher ? medication_request_id : 'order-123',
     status: 'draft',
   };
 

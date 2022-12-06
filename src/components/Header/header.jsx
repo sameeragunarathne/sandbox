@@ -333,7 +333,7 @@ export class Header extends Component {
         <span>
           <img src={cdsHooksLogo} alt="" height="30" width="30" />
         </span>
-        <b className={styles["logo-title"]}>X-EHR</b>
+        <b className={styles["logo-title"]}>CAPE COD Hospital EHR</b>
       </div>
     );
 

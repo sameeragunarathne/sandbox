@@ -250,21 +250,7 @@ export class RxView extends Component {
 
   setSubmitPrescriptionState() {
     this.openPrescribeModal();
-    this.setState({ 
-      value: "",
-      conditionCode: "",
-      dosageAmount: 1,
-      dosageFrequency: 1,
-   });
-    const newRange = {
-      enabled: true,
-      value: undefined,
-    };
-    this.setState({
-      startRange: newRange,
-      endRange: newRange,
-    });
-    // this.props.updateDate("start", newStartRange);
+    this.props.updateDate("end", this.state.endRange);
   }
 
   // Note: A second parameter (date value) is supplied automatically by the Terra onChange function for the DatePicker component
@@ -277,7 +263,7 @@ export class RxView extends Component {
     this.setState({
       endRange: newEndRange,
     });
-    this.props.updateDate("end", newEndRange);
+    // this.props.updateDate("end", newEndRange);
   }
 
   toggleEnabledDate(event, range) {
@@ -291,6 +277,7 @@ export class RxView extends Component {
 
   closePrescribeModal() {
     this.setState({ isPrescribeModalOpen: false });
+    window.location.reload();
   }
 
   render() {

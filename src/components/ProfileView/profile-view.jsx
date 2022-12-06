@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import Modal from "terra-modal";
 import Button from "terra-button";
 import Dialog from "terra-dialog";
+import axios from 'axios';
+import store from "../../store/store";
 
 
 import styles from "./profile-view.css";
@@ -32,6 +34,7 @@ export class ProfileView extends Component {
        * Flag to determine if the modal is open
        */
       isOpen: this.props.isOpen,
+      practitioner: {}
     };
 
     this.handleCloseModal = this.handleCloseModal.bind(this);
@@ -44,13 +47,37 @@ export class ProfileView extends Component {
     }
   }
 
+  async componentDidMount() {
+    const fhirServer = store.getState().fhirServerState.currentFhirServer;
+    const practitionerId = store.getState().patientState.defaultUser;
+    console.log("practitioner id: " + practitionerId);
+    const headers = {
+      Accept: 'application/json+fhir',
+    };
+    axios({
+      method: 'get',
+      url: `${fhirServer}Practitioner/${practitionerId}`,
+      headers,
+    }).then((result) => {
+      console.log(result.data);
+      this.setState({ practitioner: result.data });
+    }).catch((err) => {
+      console.log("Error occurred while fetching practitioner details.", err);
+    });
+
+    console.log("Practitioner data retrievel method called.");
+  }
+
   render() {
     // const pracId = props.patient.name || "Missing Practitioner ID";
     // const pracName = props.patient.name || "Missing Name";
     // const hName = props.patient.birthDate || "Missing Hospital Name";
-    const pracId = "e443ac58-8ece-4385-8d55-775c1b8f3a37";
-    const pracName = "Dr. Sara Angulo";
-    const hName = "Asiri Hospital Colombo";
+    var pracId = this.state.practitioner.id;
+    var pracName = "";
+    if (this.state.practitioner.name) {
+      pracName = this.state.practitioner.name[0].given[0] + " " + this.state.practitioner.name[0].family;
+    }
+    const hName = "Cape Cod Hospital";
 
     const headerContainer = (
       <div className={styles["modal-header"]}>
